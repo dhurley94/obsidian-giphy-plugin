@@ -25,5 +25,16 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
           this.plugin.settings.apiKey = value;
           await this.plugin.saveSettings();
         }));
+
+    new Setting(containerEl)
+      .setName('Image Count')
+      .setDesc('Images Loaded from Search Query')
+      .addText(text => text
+        .setPlaceholder('5')
+        .setValue(this.plugin.settings.imageCount.toString())
+        .onChange(async (value) => {
+          this.plugin.settings.imageCount = Number(value);
+          await this.plugin.saveSettings();
+        }));
   }
 }

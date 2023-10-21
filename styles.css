@@ -6,3 +6,18 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.giphy-image {
+  margin: 3px;
+  cursor: pointer;
+  border: 3px solid gray;
+}
+
+.giphy-image:hover {
+  cursor: grab;
+  border: 3px solid blue;
+}
+
+.search-input {}
+
+.search-button {}

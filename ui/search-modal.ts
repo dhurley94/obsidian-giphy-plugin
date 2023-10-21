@@ -14,12 +14,12 @@ export class GiphySearchModal extends Modal {
     const inputEl = contentEl.createEl('input', {
       type: 'text',
       placeholder: 'Enter keyword to search on Giphy...',
-      cls: [],
+      cls: ['.search-input'],
     });
 
     const submitBtn = contentEl.createEl('button', {
       text: 'Search',
-      cls: [],
+      cls: ['.search-button'],
     });
 
     inputEl.addEventListener('keydown', (event: KeyboardEvent) => {
