@@ -1,0 +1,27 @@
+name: test
+on:
+    push:
+    pull_request:
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  version: latest
+            - name: Install modules
+              run: npm install
+            - name: Run ESLint
+              run: npm run lint
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: actions/setup-node@v3
+                with:
+                    version: latest
+            -   name: Install modules
+                run: npm install
+            -   name: Run build
+                run: npm run build
