@@ -1,9 +1,9 @@
 {
-	"id": "community-giphy-plugin",
-	"name": "Community Giphy Plugin",
-	"version": "1.0.0",
+	"id": "giphy-insert",
+	"name": "Giphy Insert",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This is a Community Giphy plugin for Obsidian. This plugin helps users insert Gif from the Giphy API.",
+	"description": "This is a Giphy plugin for Obsidian. This plugin helps users insert Gifs from the Giphy API.",
 	"author": "drhurley94",
 	"authorUrl": "https://github.com/dhurley94",
 	"isDesktopOnly": false
