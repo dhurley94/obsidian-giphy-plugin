@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS: GiphyPluginSettings = {
 
 export default class GiphyPlugin extends ObsidianPlugin {
   settings: GiphyPluginSettings;
+	private cursor: CodeMirror.Position;
 
   async onload() {
     this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
@@ -35,27 +36,34 @@ export default class GiphyPlugin extends ObsidianPlugin {
   }
 
     
-  async searchGiphy() {
-    const keyword = await this.promptForInput();
-    if (!keyword) { return; }
-        
-    const gifUrls = await this.queryGiphy(keyword, this.settings.imageCount);
-    if (gifUrls.length === 0) {
-      new Notice('No GIFs found.');
-      return;
-    }
-    
-    const selectedGifUrl = await this.promptForGifSelection(gifUrls);
-    if (!selectedGifUrl) { return; }
-    
-    const editor = this.getEditor();
-    if (editor) {
-      editor.replaceSelection(`![Giphy GIF](${selectedGifUrl})`);
-    } else {
-      new Notice('Failed to get the editor instance.');
-    }
-  }
-    
+	async searchGiphy() {
+			// Save the current cursor position
+			const editor = this.getEditor();
+			if (editor) {
+					this.cursor = editor.getCursor();
+			}
+			
+			const keyword = await this.promptForInput();
+			if (!keyword) return;
+			
+			const gifUrls = await this.queryGiphy(keyword);
+			if (gifUrls.length === 0) {
+					new Notice('No GIFs found.');
+					return;
+			}
+	
+			const selectedGifUrl = await this.promptForGifSelection(gifUrls);
+			if (!selectedGifUrl) return;
+	
+			// Restore the cursor position
+			if (editor && this.cursor) {
+					editor.setCursor(this.cursor);
+			}
+	
+			// Insert the selected image at the current cursor location
+			editor?.replaceRange(`![Giphy GIF](${selectedGifUrl})`, this.cursor);
+	}
+	
   async promptForGifSelection(gifUrls: string[]): Promise<string | null> {
     return new Promise((resolve) => {
       const modal = new GiphyImagePickerModal(this.app, gifUrls, resolve);
