@@ -27,8 +27,8 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Image Count')
-      .setDesc('Images Loaded from Search Query')
+      .setName('Limit Image Count')
+      .setDesc('Giphy Images Loaded from Query')
       .addText(text => text
         .setPlaceholder('5')
         .setValue(this.plugin.settings.imageCount.toString())

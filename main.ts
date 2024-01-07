@@ -13,19 +13,21 @@ const DEFAULT_SETTINGS: GiphyPluginSettings = {
   imageCount: 5,
 };
 
-export async function queryGiphyApi(apiKey: string, limit = 3, keyword = ""): Promise<string[] | null> {
+export async function queryGiphyApi(apiKey: string, limit = 3, keyword = ''): Promise<string[] | null> {
   const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
   const response = await fetch(`${GIPHY_API_ENDPOINT}?q=${encodeURIComponent(keyword)}&api_key=${apiKey}&limit=${limit}`);
   const data = await response.json();
   if (data.data.length === 0) {
-    return null
+    return null;
   }
   return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
 }
 
 export default class GiphyPlugin extends ObsidianPlugin {
   settings: GiphyPluginSettings;
-	private cursor: CodeMirror.Position;
+
+  private cursor: CodeMirror.Position;
+
   private lastQueryKeyword: string;
 
   async onload() {
@@ -46,32 +48,32 @@ export default class GiphyPlugin extends ObsidianPlugin {
     await this.saveData(this.settings);
   }
 
-	async searchGiphy() {
-			// Save the current cursor position
-			const editor = this.getEditor();
-			if (editor) {
-					this.cursor = editor.getCursor();
-			}
+  async searchGiphy() {
+    // Save the current cursor position
+    const editor = this.getEditor();
+    if (editor) {
+      this.cursor = editor.getCursor();
+    }
 			
-			const keyword = await this.promptForInput();
-			if (!keyword) return;
-			const gifUrls = await queryGiphyApi(this.settings.apiKey, this.settings.imageCount, keyword);
-			if (!gifUrls) {
-					new Notice('No GIFs found.').setMessage('No GIFs found.');
-					return;
-			}
+    const keyword = await this.promptForInput();
+    if (!keyword) return;
+    const gifUrls = await queryGiphyApi(this.settings.apiKey, this.settings.imageCount, keyword);
+    if (!gifUrls) {
+      new Notice('No GIFs found.').setMessage('No GIFs found.');
+      return;
+    }
 	
-			const selectedGifUrl = await this.promptForGifSelection(gifUrls);
-			if (!selectedGifUrl) return;
+    const selectedGifUrl = await this.promptForGifSelection(gifUrls);
+    if (!selectedGifUrl) return;
 	
-			// Restore the cursor position
-			if (editor && this.cursor) {
-					editor.setCursor(this.cursor);
-			}
+    // Restore the cursor position
+    if (editor && this.cursor) {
+      editor.setCursor(this.cursor);
+    }
 	
-			// Insert the selected image at the current cursor location
-			editor?.replaceRange(`![Giphy GIF](${selectedGifUrl})`, this.cursor);
-	}
+    // Insert the selected image at the current cursor location
+    editor?.replaceRange(`![Giphy GIF](${selectedGifUrl})`, this.cursor);
+  }
 	
   async promptForGifSelection(gifUrls: string[]): Promise<string | null> {
     return new Promise((resolve) => {

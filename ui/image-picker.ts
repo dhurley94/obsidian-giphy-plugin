@@ -35,8 +35,10 @@ export class GiphyImagePickerModal extends Modal {
     new Setting(contentEl).addButton(btn =>
       btn
         .setIcon('refresh-ccw')
-        .onClick(evt => console.log)
-      )
+        .onClick(() => {
+          console.log('refresh click');
+        }),
+    );
   }
 
   onClose() {
