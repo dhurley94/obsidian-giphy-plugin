@@ -13,9 +13,20 @@ const DEFAULT_SETTINGS: GiphyPluginSettings = {
   imageCount: 5,
 };
 
+export async function queryGiphyApi(apiKey: string, limit = 3, keyword = ""): Promise<string[] | null> {
+  const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
+  const response = await fetch(`${GIPHY_API_ENDPOINT}?q=${encodeURIComponent(keyword)}&api_key=${apiKey}&limit=${limit}`);
+  const data = await response.json();
+  if (data.data.length === 0) {
+    return null
+  }
+  return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
+}
+
 export default class GiphyPlugin extends ObsidianPlugin {
   settings: GiphyPluginSettings;
 	private cursor: CodeMirror.Position;
+  private lastQueryKeyword: string;
 
   async onload() {
     this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
@@ -35,7 +46,6 @@ export default class GiphyPlugin extends ObsidianPlugin {
     await this.saveData(this.settings);
   }
 
-    
 	async searchGiphy() {
 			// Save the current cursor position
 			const editor = this.getEditor();
@@ -45,10 +55,9 @@ export default class GiphyPlugin extends ObsidianPlugin {
 			
 			const keyword = await this.promptForInput();
 			if (!keyword) return;
-			
-			const gifUrls = await this.queryGiphy(keyword);
-			if (gifUrls.length === 0) {
-					new Notice('No GIFs found.');
+			const gifUrls = await queryGiphyApi(this.settings.apiKey, this.settings.imageCount, keyword);
+			if (!gifUrls) {
+					new Notice('No GIFs found.').setMessage('No GIFs found.');
 					return;
 			}
 	
@@ -103,13 +112,6 @@ export default class GiphyPlugin extends ObsidianPlugin {
       const modal = new GiphySearchModal(this.app, resolve);
       modal.open();
     });
-  }
-
-  async queryGiphy(keyword: string, limit = 3): Promise<string[]> {
-    const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
-    const response = await fetch(`${GIPHY_API_ENDPOINT}?q=${encodeURIComponent(keyword)}&api_key=${this.settings.apiKey}&limit=${limit}`);
-    const data = await response.json();
-    return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
   }
 
   getEditor(): CodeMirror.Editor | null {

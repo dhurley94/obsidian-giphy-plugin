@@ -1,4 +1,4 @@
-import { App, Modal } from 'obsidian';
+import { App, Modal, Setting } from 'obsidian';
 
 export class GiphyImagePickerModal extends Modal {
   selectedImageEl: HTMLImageElement | null = null;
@@ -31,6 +31,12 @@ export class GiphyImagePickerModal extends Modal {
         this.close();
       };
     });
+
+    new Setting(contentEl).addButton(btn =>
+      btn
+        .setIcon('refresh-ccw')
+        .onClick(evt => console.log)
+      )
   }
 
   onClose() {
