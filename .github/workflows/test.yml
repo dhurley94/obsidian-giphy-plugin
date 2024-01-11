@@ -1,17 +1,9 @@
+---
 name: test
 on:
     push:
     pull_request:
 jobs:
-    version-check:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-            - name: Install modules
-              run: npm install
-            - name: Run ESLint
-              run: npm run version
     lint:
         runs-on: ubuntu-latest
         steps:
@@ -30,3 +22,12 @@ jobs:
               run: npm install
             - name: Run build
               run: npm run build
+    version-check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+            - name: Install modules
+              run: npm install
+            - name: Run ESLint
+              run: npm run version

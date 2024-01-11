@@ -1,9 +1,8 @@
 ---
 name: Build obsidian plugin
 
-on:      
+on:
     push:
-        
         tags:
             - "*"
 
