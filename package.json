@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-giphy-plugin",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "This is a plugin for Obsidian that help you insert Giphy images (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
