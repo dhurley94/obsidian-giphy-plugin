@@ -10,7 +10,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-	"strictNullChecks": true,
+    "jsx": "preserve",
+    "strictNullChecks": true,
     "lib": [
       "DOM",
       "ES5",
@@ -18,6 +19,7 @@
       "ES7"
     ]
   },
+  "exclude": ["**.test.**"],
   "include": [
     "**/*.ts"
   ]
