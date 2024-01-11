@@ -1,9 +1,12 @@
+import GiphyPlugin from 'main';
 import { App, Modal } from 'obsidian';
 
 export class GiphySearchModal extends Modal {
-  private onResolve: (value: string) => void;
-
-  constructor(app: App, onResolve: (value: string) => void) {
+  constructor(
+    app: App,
+    private plugin: GiphyPlugin,
+    private onResolve: (value: string) => void,
+  ) {
     super(app);
     this.onResolve = onResolve;
   }

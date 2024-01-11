@@ -1,10 +1,8 @@
-import GiphyPlugin from 'main';
+import GiphyPlugin, { DEFAULT_SETTINGS } from 'main';
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 export class GiphyPluginSettingTab extends PluginSettingTab {
-  plugin: GiphyPlugin;
-
-  constructor(app: App, plugin: GiphyPlugin) {
+  constructor(app: App, private plugin: GiphyPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -34,6 +32,28 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
         .setValue(this.plugin.settings.imageCount.toString())
         .onChange(async (value) => {
           this.plugin.settings.imageCount = Number(value);
+          await this.plugin.saveSettings();
+        }));
+
+    new Setting(containerEl)
+      .setName('Image CSS')
+      .setDesc('Customize how GIFs are displayed in a document.')
+      .addText(text => text
+        .setPlaceholder(DEFAULT_SETTINGS.imageCss)
+        .setValue(this.plugin.settings.imageCss.toString())
+        .onChange(async (value) => {
+          this.plugin.settings.imageCss = value;
+          await this.plugin.saveSettings();
+        }));
+    
+    new Setting(containerEl)
+      .setName('Image Size')
+      .setDesc('Customize the GIFs size in px.')
+      .addText(text => text
+        .setPlaceholder(DEFAULT_SETTINGS.imageSize)
+        .setValue(this.plugin.settings.imageSize.toString())
+        .onChange(async (value) => {
+          this.plugin.settings.imageSize = value;
           await this.plugin.saveSettings();
         }));
   }

@@ -6,32 +6,80 @@ import { GiphySearchModal } from 'ui/search-modal';
 interface GiphyPluginSettings {
   apiKey: string;
   imageCount: number;
+  imageCss: string;
+  imageSize: string;
+  slashCommands: string[];
 }
 
-const DEFAULT_SETTINGS: GiphyPluginSettings = {
+export const DEFAULT_SETTINGS: GiphyPluginSettings = {
   apiKey: '',
   imageCount: 5,
+  imageSize: '95px',
+  imageCss: 'margin: 3px; cursor: pointer; border: 2px solid gray;',
+  slashCommands: [
+    'giphy',
+    'gif',
+  ],
 };
 
-export async function queryGiphyApi(apiKey: string, limit = 3, keyword = ''): Promise<string[] | null> {
-  const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
-  const response = await fetch(`${GIPHY_API_ENDPOINT}?q=${encodeURIComponent(keyword)}&api_key=${apiKey}&limit=${limit}`);
-  const data = await response.json();
-  if (data.data.length === 0) {
-    return null;
+interface ApiClient {
+  get(url: string, params: Record<string, any>): Promise<any>;
+}
+
+class GiphyApiClient implements ApiClient {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
   }
-  return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
+
+  async get(url: string, params: Record<string, any>): Promise<any> {
+    const queryString = new URLSearchParams({ ...params, api_key: this.apiKey }).toString();
+    const response = await fetch(`${url}?${queryString}`);
+    return response.json();
+  }
+}
+
+class GiphyService {
+  private client: ApiClient;
+
+  private lastKeywordSearch: string;
+
+  constructor(client: ApiClient) {
+    this.client = client;
+  }
+
+  getLastKeyword(): string {
+    return this.lastKeywordSearch;
+  }
+
+  async queryGiphy(limit = 3, keyword = ''): Promise<string[] | null> {
+    const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
+    const data = await this.client.get(GIPHY_API_ENDPOINT, { q: keyword, limit });
+    this.lastKeywordSearch = keyword;
+
+    if (data.data.length === 0) {
+      return null;
+    }
+    
+    return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
+  }
 }
 
 export default class GiphyPlugin extends ObsidianPlugin {
   settings: GiphyPluginSettings;
 
-  private cursor: CodeMirror.Position;
+  private giphyClient: GiphyApiClient;
 
-  private lastQueryKeyword: string;
+  public giphyService: GiphyService;
+
+  private cursor: CodeMirror.Position;
 
   async onload() {
     this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
+      
+    this.giphyClient = new GiphyApiClient(this.settings.apiKey);
+    this.giphyService = new GiphyService(this.giphyClient);
 
     this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleActiveLeafChange.bind(this)));
 
@@ -57,7 +105,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
 			
     const keyword = await this.promptForInput();
     if (!keyword) return;
-    const gifUrls = await queryGiphyApi(this.settings.apiKey, this.settings.imageCount, keyword);
+    const gifUrls = await this.giphyService.queryGiphy(this.settings.imageCount, keyword);
     if (!gifUrls) {
       new Notice('No GIFs found.').setMessage('No GIFs found.');
       return;
@@ -77,7 +125,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
 	
   async promptForGifSelection(gifUrls: string[]): Promise<string | null> {
     return new Promise((resolve) => {
-      const modal = new GiphyImagePickerModal(this.app, gifUrls, resolve);
+      const modal = new GiphyImagePickerModal(this.app, this, gifUrls, resolve);
       modal.open();
     });
   }
@@ -93,8 +141,8 @@ export default class GiphyPlugin extends ObsidianPlugin {
   }
 
   private handleEditorChange(cm: any, change: any): void {
-    const insertedText = change?.text?.join('') || '';
-    if (insertedText.includes('/giphy')) {
+    const insertedText: string = change?.text?.join('') || '';
+    if (DEFAULT_SETTINGS.slashCommands.filter((command) => insertedText.includes(`/${command}`))) {
       this.searchGiphy();
 
       try {
@@ -111,7 +159,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
 
   async promptForInput(): Promise<string> {
     return new Promise((resolve) => {
-      const modal = new GiphySearchModal(this.app, resolve);
+      const modal = new GiphySearchModal(this.app, this, resolve);
       modal.open();
     });
   }
