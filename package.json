@@ -1,10 +1,11 @@
 {
 	"name": "obsidian-giphy-plugin",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "This is a plugin for Obsidian that help you insert Giphy images (https://obsidian.md)",
-	"main": "dist/main.js",
+	"main": "main.js",
 	"scripts": {
-		"dev": "node esbuild.config.mjs",
+		"dev": "nodemon -e ts --watch src --exec \"npm run build\"",
+		"debug": "npm run dev",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node ./scripts/version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint --config .eslintrc --fix --color --ext .ts . --resolve-plugins-relative-to ."
@@ -13,6 +14,8 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@codemirror/state": "^6.0.0",
+		"@codemirror/view": "^6.0.0",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "^6.8.0",
 		"@typescript-eslint/parser": "^6.8.0",
@@ -22,6 +25,8 @@
 		"eslint-config-airbnb-typescript": "^17.1.0",
 		"eslint-plugin-no-loops": "^0.3.0",
 		"eslint-plugin-prettier": "^5.0.1",
+		"prettier": "^3.0.0",
+		"nodemon": "^3.0.2",
 		"obsidian": "^1.4.11",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"

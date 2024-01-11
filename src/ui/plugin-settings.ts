@@ -1,4 +1,4 @@
-import GiphyPlugin, { DEFAULT_SETTINGS } from 'main';
+import GiphyPlugin, { DEFAULT_SETTINGS } from '..';
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 export class GiphyPluginSettingTab extends PluginSettingTab {
@@ -18,18 +18,19 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
       .setDesc('Enter your Giphy API key')
       .addText(text => text
         .setPlaceholder('Enter your API key...')
-        .setValue(this.plugin.settings.apiKey)
+        .setValue('***************')
         .onChange(async (value) => {
           this.plugin.settings.apiKey = value;
           await this.plugin.saveSettings();
-        }));
+        })
+        .setValue('***************'));
 
     new Setting(containerEl)
       .setName('Limit Image Count')
       .setDesc('Giphy Images Loaded from Query')
       .addText(text => text
         .setPlaceholder('5')
-        .setValue(this.plugin.settings.imageCount.toString())
+        .setValue(this.plugin.settings.imageCount.toString() ?? DEFAULT_SETTINGS.imageSize)
         .onChange(async (value) => {
           this.plugin.settings.imageCount = Number(value);
           await this.plugin.saveSettings();
@@ -40,7 +41,7 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
       .setDesc('Customize how GIFs are displayed in a document.')
       .addText(text => text
         .setPlaceholder(DEFAULT_SETTINGS.imageCss)
-        .setValue(this.plugin.settings.imageCss.toString())
+        .setValue(this.plugin.settings.imageCss ?? DEFAULT_SETTINGS.imageCss)
         .onChange(async (value) => {
           this.plugin.settings.imageCss = value;
           await this.plugin.saveSettings();
@@ -51,7 +52,7 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
       .setDesc('Customize the GIFs size in px.')
       .addText(text => text
         .setPlaceholder(DEFAULT_SETTINGS.imageSize)
-        .setValue(this.plugin.settings.imageSize.toString())
+        .setValue(this.plugin.settings.imageSize ?? DEFAULT_SETTINGS.imageSize)
         .onChange(async (value) => {
           this.plugin.settings.imageSize = value;
           await this.plugin.saveSettings();

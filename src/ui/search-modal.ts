@@ -1,4 +1,4 @@
-import GiphyPlugin from 'main';
+import GiphyPlugin from '..';
 import { App, Modal } from 'obsidian';
 
 export class GiphySearchModal extends Modal {

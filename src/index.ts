@@ -1,9 +1,10 @@
 import { MarkdownView, Notice, Plugin as ObsidianPlugin } from 'obsidian';
-import { GiphyImagePickerModal } from 'ui/image-picker';
-import { GiphyPluginSettingTab } from 'ui/plugin-settings';
-import { GiphySearchModal } from 'ui/search-modal';
+import { GiphyImagePickerModal } from './ui/image-picker';
+import { GiphyPluginSettingTab } from './ui/plugin-settings';
+import { GiphySearchModal } from './ui/search-modal';
+import { GiphyApiClient, GiphyService } from './api';
 
-interface GiphyPluginSettings {
+export interface GiphyPluginSettings {
   apiKey: string;
   imageCount: number;
   imageCss: string;
@@ -21,50 +22,6 @@ export const DEFAULT_SETTINGS: GiphyPluginSettings = {
     'gif',
   ],
 };
-
-interface ApiClient {
-  get(url: string, params: Record<string, any>): Promise<any>;
-}
-
-class GiphyApiClient implements ApiClient {
-  private apiKey: string;
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
-
-  async get(url: string, params: Record<string, any>): Promise<any> {
-    const queryString = new URLSearchParams({ ...params, api_key: this.apiKey }).toString();
-    const response = await fetch(`${url}?${queryString}`);
-    return response.json();
-  }
-}
-
-class GiphyService {
-  private client: ApiClient;
-
-  private lastKeywordSearch: string;
-
-  constructor(client: ApiClient) {
-    this.client = client;
-  }
-
-  getLastKeyword(): string {
-    return this.lastKeywordSearch;
-  }
-
-  async queryGiphy(limit = 3, keyword = ''): Promise<string[] | null> {
-    const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
-    const data = await this.client.get(GIPHY_API_ENDPOINT, { q: keyword, limit });
-    this.lastKeywordSearch = keyword;
-
-    if (data.data.length === 0) {
-      return null;
-    }
-    
-    return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
-  }
-}
 
 export default class GiphyPlugin extends ObsidianPlugin {
   settings: GiphyPluginSettings;
@@ -105,7 +62,8 @@ export default class GiphyPlugin extends ObsidianPlugin {
 			
     const keyword = await this.promptForInput();
     if (!keyword) return;
-    const gifUrls = await this.giphyService.queryGiphy(this.settings.imageCount, keyword);
+
+    const gifUrls = await this.giphyService.queryGiphy(keyword, this.settings.imageCount);
     if (!gifUrls) {
       new Notice('No GIFs found.').setMessage('No GIFs found.');
       return;
