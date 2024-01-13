@@ -1,5 +1,6 @@
 import GiphyPlugin from '..';
 import { App, Modal, Setting } from 'obsidian';
+import ImagePickerComponent from './svelte/image-picker.svelte'; 
 
 export class ImageContentMananger {
   private imageContent: HTMLImageElement[] = [];
@@ -28,6 +29,10 @@ export class ImageContentMananger {
     return this.imageContent[image];
   }
 
+  listUrls() {
+    return this.imageContent.map(img => img.src);
+  }
+
   list() {
     return this.imageContent;
   }
@@ -37,6 +42,9 @@ export class GiphyImagePickerModal extends Modal {
   selectedImageEl: HTMLImageElement | null = null;
 
   imageContent: ImageContentMananger;
+
+  imagePickerComponent: ImagePickerComponent;
+
 
   constructor(
     app: App,
@@ -68,13 +76,22 @@ export class GiphyImagePickerModal extends Modal {
         }),
     );
     
-    this.gifUrls.forEach(url => {
-      this.imageContent.add(url);
-      this.imageContent.list().forEach(img => img.onclick = () => {
-        this.onResolve(url);
-        this.close();
-      });
+    this.imagePickerComponent = new ImagePickerComponent({
+      target: this.contentEl,
+      props: {
+        images: this.gifUrls,
+        imageSize: this.plugin.settings.imageSize,
+        onResolve: this.onResolve,
+      },
     });
+
+    // this.gifUrls.forEach(url => {
+    //   this.imageContent.add(url);
+    //   this.imageContent.list().forEach(img => img.onclick = () => {
+    //     this.onResolve(url);
+    //     this.close();
+    //   });
+    // });
   }
 
   onClose() {
