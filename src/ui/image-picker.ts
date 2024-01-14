@@ -55,33 +55,44 @@ export class GiphyImagePickerModal extends Modal {
     super(app);
     this.onResolve = onResolve;
     this.gifUrls = gifUrls;
-    this.imageContent = new ImageContentMananger(this.contentEl, this.plugin);
+    // this.imageContent = new ImageContentMananger(this.contentEl, this.plugin);
   }
 
   onOpen() {
     const { contentEl } = this;
     contentEl.empty();
     
-    new Setting(contentEl).addButton(btn =>
-      btn
-        .setIcon('refresh-ccw')
-        .onClick(async () => {
-          const newGifUrls = await this.plugin.giphyService.queryGiphy(this.plugin.giphyService.getLastKeyword(), this.plugin.settings.imageCount);
-          this.imageContent.removeAll();
-          newGifUrls?.forEach(url => this.imageContent.add(url));
-          this.imageContent.list().forEach(img => img.onclick = () => {
-            this.onResolve(img.src);
-            this.close();
-          });
-        }),
-    );
+    // new Setting(contentEl).addButton(btn =>
+    //   btn
+    //     .setIcon('refresh-ccw')
+    //     .onClick(async () => {
+    //       const newGifUrls = await this.plugin.giphyService.queryGiphy(this.plugin.giphyService.getLastKeyword(), this.plugin.settings.imageCount);
+    //       this.imageContent.removeAll();
+    //       newGifUrls?.forEach(url => this.imageContent.add(url));
+    //       this.imageContent.list().forEach(img => img.onclick = () => {
+    //         this.onResolve(img.src);
+    //         this.close();
+    //       });
+    //     }),
+    // );
     
-    this.imagePickerComponent = new ImagePickerComponent({
+    new ImagePickerComponent({
       target: this.contentEl,
       props: {
         images: this.gifUrls,
         imageSize: this.plugin.settings.imageSize,
         onResolve: this.onResolve,
+        onClose: () => {
+          this.close.bind(this);
+          this.close();
+        },
+        onRefresh: async (): Promise<string[]> => {
+          const images = await this.plugin.giphyService.queryGiphy(this.plugin.giphyService.getLastKeyword(), this.plugin.settings.imageCount);
+          if (images) {
+            return images;
+          }
+          return [];
+        },
       },
     });
 
@@ -98,7 +109,10 @@ export class GiphyImagePickerModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
   }
+
+  
 }
+
 
 // import { App, Modal, Setting } from 'obsidian';
 
