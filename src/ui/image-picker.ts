@@ -1,5 +1,5 @@
 import GiphyPlugin from '..';
-import { App, Modal, Setting } from 'obsidian';
+import { App, Modal } from 'obsidian';
 import ImagePickerComponent from './svelte/image-picker.svelte'; 
 
 export class ImageContentMananger {
@@ -41,7 +41,7 @@ export class ImageContentMananger {
 export class GiphyImagePickerModal extends Modal {
   selectedImageEl: HTMLImageElement | null = null;
 
-  imageContent: ImageContentMananger;
+  // imageContent: ImageContentMananger;
 
   imagePickerComponent: ImagePickerComponent;
 

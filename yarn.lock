@@ -257,7 +257,7 @@
 
 "@tsconfig/svelte@^5.0.2":
   version "5.0.2"
-  resolved "https://registry.npmjs.org/@tsconfig/svelte/-/svelte-5.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/@tsconfig/svelte/-/svelte-5.0.2.tgz#c9ed3575c5445afb14965bb76e8446fbf7e4a0e6"
   integrity sha512-BRbo1fOtyVbhfLyuCWw6wAWp+U8UQle+ZXu84MYYWzYSEB28dyfnRBIE99eoG+qdAC0po6L2ScIEivcT07UaMA==
 
 "@types/codemirror@5.60.8":
@@ -2226,6 +2226,11 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.npmjs.org/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+svelte-keydown@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/svelte-keydown/-/svelte-keydown-0.6.0.tgz#ae0df24786029d0830dd1073cc5cb8284b2567dd"
+  integrity sha512-X5YBpz2SZY7ReMfbjqfsq4wFBuNM0Epi2/VS9LbxYYDHfJBSP/F5sx8D1hZz3amVLlc0JP8OLzIGsQAv6LJpIA==
+
 svelte-preprocess@^5.1.3:
   version "5.1.3"
   resolved "https://registry.npmjs.org/svelte-preprocess/-/svelte-preprocess-5.1.3.tgz"
@@ -2239,7 +2244,7 @@ svelte-preprocess@^5.1.3:
 
 svelte@^4.2.8:
   version "4.2.8"
-  resolved "https://registry.npmjs.org/svelte/-/svelte-4.2.8.tgz"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-4.2.8.tgz#a279d8b6646131ffb11bc692840f8839b8ae4ed1"
   integrity sha512-hU6dh1MPl8gh6klQZwK/n73GiAHiR95IkFsesLPbMeEZi36ydaXL/ZAb4g9sayT0MXzpxyZjR28yderJHxcmYA==
   dependencies:
     "@ampproject/remapping" "^2.2.1"

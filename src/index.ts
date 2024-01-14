@@ -1,7 +1,7 @@
-import { MarkdownView, Notice, Plugin as ObsidianPlugin } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin as ObsidianPlugin } from 'obsidian';
 import { GiphyImagePickerModal } from './ui/image-picker';
 import { GiphyPluginSettingTab } from './ui/plugin-settings';
-import { GiphySearchModal } from './ui/search-modal';
+import { GiphySearchModal } from './ui/search';
 import { GiphyApiClient, GiphyService } from './api';
 
 export interface GiphyPluginSettings {
@@ -94,9 +94,31 @@ export default class GiphyPlugin extends ObsidianPlugin {
       const editor = activeLeaf.view.editor;
       if (editor) {
         editor.exec(this.handleEditorChange.bind(this));
+        editor.exec(this.handleCursorActivity.bind(this));
       }
     }
   }
+
+  private handleCursorActivity(editor: Editor): void {
+    const cursor = editor.getCursor();
+    const line = editor.getLine(cursor.line);
+    const match = line.match(/!\[.*?\]\(.*?\)/);
+
+    if (match) {
+      const startIndex = match.index;
+      if (startIndex) {
+        const endIndex = startIndex + match[0].length;
+
+        if (cursor.ch >= startIndex && cursor.ch <= endIndex) {
+          editor.setSelection(
+            { line: cursor.line, ch: startIndex },
+            { line: cursor.line, ch: endIndex },
+          );
+        }
+      }
+    }
+  }
+
 
   private handleEditorChange(cm: any, change: any): void {
     const insertedText: string = change?.text?.join('') || '';
@@ -121,10 +143,11 @@ export default class GiphyPlugin extends ObsidianPlugin {
       modal.open();
     });
   }
-
+  
   getEditor(): CodeMirror.Editor | null {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) { return null; }
     return view.editor as any;
   }
 }
+
