@@ -1,7 +1,7 @@
 <script lang="ts">
   import { RefreshCw } from 'lucide-svelte';
-  export let images = [];
-  export let imageSize = "";
+  export let images: string[] = [];
+  export let imageSize: string = "";
 
   export let lastKeywordSearch: string;
   
@@ -22,14 +22,14 @@
 
   const handleKeydown = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      closeAfterSearch(keywordSearch);
+      closeAfterResolve(lastKeywordSearch);
     }
   };
 </script>
   
 <div>
-  <input class="search-input" bind:value={lastKeywordSearch} on:keydown={() => onRefresh(lastKeywordSearch)}/>
-  <button class="refresh-btn" on:click={onRefresh(lastKeywordSearch)}><RefreshCw/></button>
+  <input class="search-input" bind:value={lastKeywordSearch} on:keydown={(e) => handleKeydown(e)}/>
+  <button class="refresh-btn" on:click={() => onRefresh(lastKeywordSearch)}><RefreshCw/></button>
   <div class="image-gallery">
     {#each images as image}
       <!-- svelte-ignore a11y-click-events-have-key-events -->

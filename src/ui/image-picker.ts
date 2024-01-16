@@ -1,6 +1,7 @@
 import GiphyPlugin from '..';
 import { App, Modal } from 'obsidian';
 import ImagePickerComponent from './svelte/image-picker.svelte'; 
+import { imageStore, pluginStore } from '../store';
 
 export class ImageContentMananger {
   private imageContent: HTMLImageElement[] = [];
@@ -55,6 +56,7 @@ export class GiphyImagePickerModal extends Modal {
     super(app);
     this.onResolve = onResolve;
     this.gifUrls = gifUrls;
+    imageStore.set(this.gifUrls);
     // this.imageContent = new ImageContentMananger(this.contentEl, this.plugin);
   }
 
