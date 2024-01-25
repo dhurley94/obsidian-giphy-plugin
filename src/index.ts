@@ -10,6 +10,7 @@ export interface GiphyPluginSettings {
   imageCss: string;
   imageSize: string;
   slashCommands: string[];
+  history?: { keyword: string, searchedAt: string }[];
 }
 
 export const DEFAULT_SETTINGS: GiphyPluginSettings = {
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: GiphyPluginSettings = {
     'giphy',
     'gif',
   ],
+  history: [],
 };
 
 export default class GiphyPlugin extends ObsidianPlugin {
@@ -38,11 +40,9 @@ export default class GiphyPlugin extends ObsidianPlugin {
     this.giphyClient = new GiphyApiClient(this.settings.apiKey);
     this.giphyService = new GiphyService(this.giphyClient);
 
-    this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleActiveLeafChange.bind(this)));
-
     this.addCommand({
       id: 'search-giphy',
-      name: 'Search Giphy for GIFs',
+      name: 'Search Giphy',
       callback: () => this.searchGiphy(),
     });
 
@@ -64,6 +64,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
     if (!keyword) return;
 
     const gifUrls = await this.giphyService.queryGiphy(keyword, this.settings.imageCount);
+    // this.get({history: })
     if (!gifUrls) {
       new Notice('No GIFs found.').setMessage('No GIFs found.');
       return;
@@ -93,8 +94,9 @@ export default class GiphyPlugin extends ObsidianPlugin {
     if (activeLeaf?.view instanceof MarkdownView) {
       const editor = activeLeaf.view.editor;
       if (editor) {
-        editor.exec(this.handleEditorChange.bind(this));
-        editor.exec(this.handleCursorActivity.bind(this));
+        // do nothing
+        // editor.exec(this.handleSlashCommand.bind(this));
+        // editor.exec(this.handleCursorActivity.bind(this));
       }
     }
   }
@@ -119,9 +121,15 @@ export default class GiphyPlugin extends ObsidianPlugin {
     }
   }
 
-
-  private handleEditorChange(cm: any, change: any): void {
+  /**
+   * Stopped working after svelte migration.
+   * 
+   * @param cm 
+   * @param change 
+   */
+  private handleSlashCommand(cm: any, change: any) {
     const insertedText: string = change?.text?.join('') || '';
+    // if (insertedText.includes('/giphy')) {
     if (DEFAULT_SETTINGS.slashCommands.filter((command) => insertedText.includes(`/${command}`))) {
       this.searchGiphy();
 

@@ -3,6 +3,8 @@ import { App, Modal } from 'obsidian';
 import SearchComponent from './svelte/search.svelte';
 
 export class GiphySearchModal extends Modal {
+  searchComponent: SearchComponent;
+
   constructor(
     app: App,
     private plugin: GiphyPlugin,
@@ -12,11 +14,11 @@ export class GiphySearchModal extends Modal {
     this.onResolve = onResolve;
   }
 
-  onOpen() {
+  async onOpen() {
     const { contentEl } = this;
     contentEl.empty();
 
-    new SearchComponent({
+    this.searchComponent = new SearchComponent({
       target: contentEl,
       props: {
         onResolve: this.onResolve,
@@ -26,34 +28,9 @@ export class GiphySearchModal extends Modal {
         },
       },
     });
-
-  //   const inputEl = contentEl.createEl('input', {
-  //     type: 'text',
-  //     placeholder: 'Enter keyword to search on Giphy...',
-  //     cls: ['.search-input'],
-  //   });
-
-  //   const submitBtn = contentEl.createEl('button', {
-  //     text: 'Search',
-  //     cls: ['.search-button'],
-  //   });
-
-  //   inputEl.addEventListener('keydown', (event: KeyboardEvent) => {
-  //     console.log(event);
-  //     if (event.key === 'Enter') {
-  //       this.onResolve(inputEl.value);
-  //       this.close();
-  //     }
-  //   });
-
-  //   submitBtn.onclick = () => {
-  //     this.onResolve(inputEl.value);
-  //     this.close();
-  //   };
   }
 
-  onClose() {
-    const { contentEl } = this;
-    contentEl.empty();
+  async onClose() {
+    this.searchComponent.$destroy();
   }
 }
