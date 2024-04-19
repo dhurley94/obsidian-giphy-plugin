@@ -41,10 +41,12 @@ export default class GiphyPlugin extends ObsidianPlugin {
     this.giphyService = new GiphyService(this.giphyClient);
 
     this.addCommand({
-      id: 'search-giphy',
-      name: 'Search Giphy',
+      id: 'giphy-search',
+      name: 'Giphy Search',
       callback: () => this.searchGiphy(),
     });
+
+    this.addRibbonIcon('image-play', 'Giphy Search', () => this.searchGiphy());
 
     this.addSettingTab(new GiphyPluginSettingTab(this.app, this));
   }
