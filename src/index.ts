@@ -1,7 +1,7 @@
-import { MarkdownView, Notice, Plugin as ObsidianPlugin } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin as ObsidianPlugin } from 'obsidian';
 import { GiphyImagePickerModal } from './ui/image-picker';
 import { GiphyPluginSettingTab } from './ui/plugin-settings';
-import { GiphySearchModal } from './ui/search-modal';
+import { GiphySearchModal } from './ui/search';
 import { GiphyApiClient, GiphyService } from './api';
 
 export interface GiphyPluginSettings {
@@ -10,6 +10,7 @@ export interface GiphyPluginSettings {
   imageCss: string;
   imageSize: string;
   slashCommands: string[];
+  history?: { keyword: string, searchedAt: string }[];
 }
 
 export const DEFAULT_SETTINGS: GiphyPluginSettings = {
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: GiphyPluginSettings = {
     'giphy',
     'gif',
   ],
+  history: [],
 };
 
 export default class GiphyPlugin extends ObsidianPlugin {
@@ -38,13 +40,13 @@ export default class GiphyPlugin extends ObsidianPlugin {
     this.giphyClient = new GiphyApiClient(this.settings.apiKey);
     this.giphyService = new GiphyService(this.giphyClient);
 
-    this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleActiveLeafChange.bind(this)));
-
     this.addCommand({
-      id: 'search-giphy',
-      name: 'Search Giphy for GIFs',
+      id: 'giphy-search',
+      name: 'Giphy Search',
       callback: () => this.searchGiphy(),
     });
+
+    this.addRibbonIcon('image-play', 'Giphy Search', () => this.searchGiphy());
 
     this.addSettingTab(new GiphyPluginSettingTab(this.app, this));
   }
@@ -64,6 +66,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
     if (!keyword) return;
 
     const gifUrls = await this.giphyService.queryGiphy(keyword, this.settings.imageCount);
+    // this.get({history: })
     if (!gifUrls) {
       new Notice('No GIFs found.').setMessage('No GIFs found.');
       return;
@@ -93,13 +96,42 @@ export default class GiphyPlugin extends ObsidianPlugin {
     if (activeLeaf?.view instanceof MarkdownView) {
       const editor = activeLeaf.view.editor;
       if (editor) {
-        editor.exec(this.handleEditorChange.bind(this));
+        // do nothing
+        // editor.exec(this.handleSlashCommand.bind(this));
+        // editor.exec(this.handleCursorActivity.bind(this));
       }
     }
   }
 
-  private handleEditorChange(cm: any, change: any): void {
+  private handleCursorActivity(editor: Editor): void {
+    const cursor = editor.getCursor();
+    const line = editor.getLine(cursor.line);
+    const match = line.match(/!\[.*?\]\(.*?\)/);
+
+    if (match) {
+      const startIndex = match.index;
+      if (startIndex) {
+        const endIndex = startIndex + match[0].length;
+
+        if (cursor.ch >= startIndex && cursor.ch <= endIndex) {
+          editor.setSelection(
+            { line: cursor.line, ch: startIndex },
+            { line: cursor.line, ch: endIndex },
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Stopped working after svelte migration.
+   * 
+   * @param cm 
+   * @param change 
+   */
+  private handleSlashCommand(cm: any, change: any) {
     const insertedText: string = change?.text?.join('') || '';
+    // if (insertedText.includes('/giphy')) {
     if (DEFAULT_SETTINGS.slashCommands.filter((command) => insertedText.includes(`/${command}`))) {
       this.searchGiphy();
 
@@ -121,10 +153,11 @@ export default class GiphyPlugin extends ObsidianPlugin {
       modal.open();
     });
   }
-
+  
   getEditor(): CodeMirror.Editor | null {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) { return null; }
     return view.editor as any;
   }
 }
+

@@ -10,14 +10,17 @@ If your plugin does not need CSS, delete this file.
 .giphy-image {
   margin: 3px;
   cursor: pointer;
-  border: 3px solid gray;
+  border-radius: 5px;
+  border: 3px solid rgb(57, 58, 58)
 }
 
 .giphy-image:hover {
   cursor: grab;
-  border: 3px solid blue;
+  border: 3px solid gray;
 }
 
-.search-input {}
+.search-input {
+	
+}
 
 .search-button {}

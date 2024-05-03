@@ -1,10 +1,11 @@
 {
 	"name": "obsidian-giphy-plugin",
-	"version": "1.1.3",
+	"version": "1.1.4",
 	"description": "This is a plugin for Obsidian that help you insert Giphy images (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
-		"dev": "nodemon -e ts --watch src --exec \"npm run build\"",
+		"check": "svelte-check",
+		"dev": "nodemon -e ts,svelte --watch src --exec \"npm run build\"",
 		"debug": "npm run dev",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node ./scripts/version-bump.mjs && git add manifest.json versions.json",
@@ -16,22 +17,31 @@
 	"devDependencies": {
 		"@codemirror/state": "^6.0.0",
 		"@codemirror/view": "^6.0.0",
+		"@sveltejs/adapter-auto": "^3.1.0",
+		"@tsconfig/svelte": "^5.0.2",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "^6.8.0",
 		"@typescript-eslint/parser": "^6.8.0",
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.17.3",
+		"esbuild-svelte": "^0.8.0",
 		"eslint": "^8.56.0",
 		"eslint-config-airbnb-typescript": "^17.1.0",
 		"eslint-plugin-no-loops": "^0.3.0",
 		"eslint-plugin-prettier": "^5.0.1",
-		"prettier": "^3.0.0",
+		"lucide-svelte": "^0.309.0",
 		"nodemon": "^3.0.2",
 		"obsidian": "^1.4.11",
+		"prettier": "^3.0.0",
+		"svelte-check": "^3.6.3",
+		"svelte-keydown": "^0.6.0",
+		"svelte-preprocess": "^5.1.3",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
-		"eslint-plugin-import": "^2.29.1"
+		"@sveltestrap/sveltestrap": "^6.2.3",
+		"eslint-plugin-import": "^2.29.1",
+		"svelte": "^4.2.9"
 	}
 }
