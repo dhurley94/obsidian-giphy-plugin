@@ -1,12 +1,10 @@
 <script lang="ts">
 import {
-  Styles,
   Button,
   Input,
   Container,
   Col,
   Row,
-  Image,
 } from '@sveltestrap/sveltestrap';
 
 import {
@@ -38,8 +36,6 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 </script>
-
-<Styles></Styles>
 
 <Container fluid>
     <Row>

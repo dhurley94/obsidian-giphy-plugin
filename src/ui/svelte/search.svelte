@@ -1,12 +1,9 @@
 <script lang="ts">
 import {
-  Styles,
   Button,
   Input,
   Container,
   Row,
-  Col,
-
 } from '@sveltestrap/sveltestrap';
 export let keywordSearch: string;
 export let onResolve: (keyword: string) => void;
@@ -23,8 +20,6 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 </script>
-
-<Styles />
 
 <Container lg>
     <Row>
