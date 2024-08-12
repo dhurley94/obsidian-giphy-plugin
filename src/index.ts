@@ -38,8 +38,6 @@ export default class GiphyPlugin extends ObsidianPlugin {
     this.giphyClient = new GiphyApiClient(this.settings.apiKey);
     this.giphyService = new GiphyService(this.giphyClient);
 
-    this.registerEvent(this.app.workspace.on('active-leaf-change', this.handleActiveLeafChange.bind(this)));
-
     this.addCommand({
       id: 'search-giphy',
       name: 'Search Giphy for GIFs',
@@ -86,16 +84,6 @@ export default class GiphyPlugin extends ObsidianPlugin {
       const modal = new GiphyImagePickerModal(this.app, this, gifUrls, resolve);
       modal.open();
     });
-  }
-
-  private handleActiveLeafChange(): void {
-    const activeLeaf = this.app.workspace.getLeaf();
-    if (activeLeaf?.view instanceof MarkdownView) {
-      const editor = activeLeaf.view.editor;
-      if (editor) {
-        editor.exec(this.handleEditorChange.bind(this));
-      }
-    }
   }
 
   private handleEditorChange(cm: any, change: any): void {
