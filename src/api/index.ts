@@ -3,7 +3,7 @@ export interface ApiClient {
 }
 
 export class GiphyApiClient implements ApiClient {
-  private apiKey: string;
+  private readonly apiKey: string;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
@@ -12,12 +12,15 @@ export class GiphyApiClient implements ApiClient {
   async get(url: string, params: Record<string, any>): Promise<any> {
     const queryString = new URLSearchParams({ ...params, api_key: this.apiKey }).toString();
     const response = await fetch(`${url}?${queryString}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
     return response.json();
   }
 }
 
 export class GiphyService {
-  private client: ApiClient;
+  private readonly client: ApiClient;
 
   private lastKeywordSearch: string;
 
@@ -35,13 +38,16 @@ export class GiphyService {
     const GIPHY_API_ENDPOINT = 'https://api.giphy.com/v1/gifs/search';
 
     if (!keyword) console.warn('No keyword specified');
-    if (keyword === this.lastKeywordSearch) this.offset += limit;
+    
+    if (keyword !== this.lastKeywordSearch) {
+      this.offset = 0;
+    } else {
+      this.offset += limit;
+    }
     this.lastKeywordSearch = keyword;
 
     const data = await this.client.get(GIPHY_API_ENDPOINT, { q: keyword, limit, offset: this.offset });
-
     if (data.data.length === 0) return null;
-    
     return data.data.map((gif: { images: { original: { url: string } } }) => gif.images.original.url);
   }
 }

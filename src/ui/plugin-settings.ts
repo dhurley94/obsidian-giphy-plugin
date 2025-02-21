@@ -22,8 +22,7 @@ export class GiphyPluginSettingTab extends PluginSettingTab {
         .onChange(async (value) => {
           this.plugin.settings.apiKey = value;
           await this.plugin.saveSettings();
-        })
-        .setValue('***************'));
+        }));
 
     new Setting(containerEl)
       .setName('Limit Image Count')
