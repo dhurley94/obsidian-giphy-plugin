@@ -76,7 +76,7 @@ export default class GiphyPlugin extends ObsidianPlugin {
     }
 	
     // Insert the selected image at the current cursor location
-    editor?.replaceRange(`![Giphy GIF](${selectedGifUrl})`, this.cursor);
+    editor?.replaceRange(`![${keyword}](${selectedGifUrl})`, this.cursor);
   }
 	
   async promptForGifSelection(gifUrls: string[]): Promise<string | null> {
